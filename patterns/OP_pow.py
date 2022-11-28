@@ -58,9 +58,7 @@ def find_mult_pattern_at(expr: ast.Expr, source: str, data: ExprData, passed_rig
     # if left is an Operation then give the "process" to that side
     if isinstance(expr.left, ast.BinOp):
 
-        # set end; end is the offset of chars where the code is located line[:end]
-        data.end = expr.end_col_offset
-
+        # set end; end is the offset of chars where the code is located line[end:]
         return find_mult_pattern_at(expr.left, source, data, right_value)
 
     # if left is not an operation then it is has a value
@@ -90,6 +88,8 @@ def find_mult_pattern_at(expr: ast.Expr, source: str, data: ExprData, passed_rig
     # replace expr in source with pow
     code = source.split("\n")
     line = code[expr.lineno-1]
+
+
     code[expr.lineno-1] = line[:start] + \
         f"pow({data.base}, {data.exponent})" + line[data.end:]
 
@@ -100,15 +100,22 @@ def find_all_binOp(body: ast.Module | List[ast.Expr]) -> List[ast.BinOp]:
     """
     Finds all `ast.BinOp` inside all properties of all members of the given `body`
     """
-
+    # found binOp
     found: List[ast.BinOp] = []
 
+    # iterate trough item in body 
     for item in body:
 
         if isinstance(item, ast.BinOp):
             found.append(item)
             continue
 
+        # if is a list find binOp in that list items
+        elif isinstance(item, list):
+            found.extend(find_all_binOp(item))
+            continue
+
+        # if the item cannot contains a binOp
         if not isinstance(item, (
             ast.Assign,
             ast.Expr,
@@ -120,21 +127,26 @@ def find_all_binOp(body: ast.Module | List[ast.Expr]) -> List[ast.BinOp]:
             ast.AsyncFunctionDef,
             ast.AsyncFor,
             ast.With,
-            ast.AsyncWith
-        )) or not getattr(item, "__dict__", None):
+            ast.AsyncWith,
+            ast.Module,
+            list
+        )):
             continue
         
-        print()
-        for k, value in vars(item).items():
-            print(k)
+        # iterate throught members of the item
+        for value in vars(item).values():
 
             if isinstance(value, ast.BinOp):
                 found.append(value)
                 continue
 
+            # try to find a binOp inside the value if possible
             else:
                 if getattr(value, "__dict__", None):
                     found.extend(find_all_binOp([value]))
+
+                elif isinstance(value, list):
+                    found.extend(find_all_binOp(value))
 
     return found
 
@@ -154,11 +166,7 @@ def pattern_handler(source: str) -> str:
     # iterate throught BinOp (arithmetic operations) and see if can find any multiplication valid pattern to replace
 
     f = find_all_binOp(parsed_source.body)
-    print(f)
     for expr in f:
-
-        expr: ast.Expr = expr.value
-
         source = find_mult_pattern_at(expr, source, ExprData())
 
     return source

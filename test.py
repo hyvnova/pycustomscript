@@ -1,6 +1,11 @@
 # DO NOT RUN THIS FILE DIRECTLY; run run.py
+import time
 
-for i in range(10):
+
+s = time.time()
+for i in range(9000000):
     x = i * i * i 
-    z = x * x * x // 2
-    y = z * z - x * x + z * z
+    num = x * x
+    
+e = time.time()
+print("TIME:", e-s)
