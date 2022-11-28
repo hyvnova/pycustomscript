@@ -1,2 +1,4 @@
-x = 3
-z = pow(x, 3) + 23 * 5
+for i in range(10):
+    x = i * i * i 
+    z = x * x * x // 2
+    y = z * z - x * x + z * z
