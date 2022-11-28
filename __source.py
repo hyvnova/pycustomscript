@@ -1,5 +1,2 @@
-data = {"name" : "Jonh", "level" : 3, "other" : "other value"}
-
-name, level = data['name'], data['level'], 
-
-print(name, level)
+x = 3
+z = pow(x, 3) + 23 * 5

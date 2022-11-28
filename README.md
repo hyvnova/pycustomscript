@@ -18,7 +18,7 @@ print(name, role) # Jonh Developer
 - JS-like Anonimous Functions
 ```py
 even_numbers: List[int] = list(filter(
-    (n) = { n%2=0 },
+    (n) = { n%2==0 },
     numbers
 ))
 ```

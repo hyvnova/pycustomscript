@@ -1,13 +1,14 @@
 from patterns import patterns
 
-def run(code: str) -> None:
+def run(raw_source: str) -> None:
     """
     Runs the code given using CustomScript Sintax
     """
-    source =  ""
+
+    source = ""
 
     # clean lines
-    for line in code.split("\n"):
+    for line in raw_source.split("\n"):
 
         # skip empty lines or comments
         if not line.strip() or line.startswith("#"):
@@ -19,9 +20,9 @@ def run(code: str) -> None:
 
         source += line + "\n"
 
-        for pattern_handler in patterns:
-            source = pattern_handler(source)
 
+    for pattern_handler in patterns:
+        source = pattern_handler(source)
 
     # save source
     with open("__source.py", "w") as f:
