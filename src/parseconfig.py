@@ -5,10 +5,15 @@ from dataclasses import dataclass
 from pathlib import Path
 
 # local modules
-from .interpreter import prepare_module
+from .interpreter import process_raw_source
 
 #  CONTANST ------------------------ <!>
 DEFAULT_PACKAGE_MODULE_NAME = "origin"
+CONFIG_FILE_NAME = "config.toml" # <!> this needs to change
+
+
+
+
 
 
 @dataclass
@@ -29,7 +34,6 @@ to be imported",
 
 
 
-
 class Errors:
     
     def MissingField(field: Field) -> None:
@@ -44,15 +48,15 @@ class Errors:
         
 
 # main function     ------------------------------ <!> ------------------------------
-def parse_config_file(file: str):
+def parse_config_file():
     # open and get contents of file
-    config_data: Dict[str, Any] | None = tomli.load(open(file, "rb"))
+    config_data: Dict[str, Any] | None = tomli.load(open(CONFIG_FILE_NAME, "rb"))
     
     
     # check if file has contents and is a dict
     if not config_data or not isinstance(config_data, dict):
         print(
-            "Error: No configuration found at:", file,
+            "Error: No configuration found at:", CONFIG_FILE_NAME,
             "\n\t Make sure the config file has the proper format"
         )
         exit(1)
@@ -71,9 +75,32 @@ def parse_config_file(file: str):
              
         for module_name in modules:
             
-            # creates the source module and gets the name of it
-            source_module_name = Path(prepare_module(module_name + ".py").__file__).name[:-3]
+            if not module_name.endswith(".py"):
+                module_name += ".py"
+            
+            module_path = Path(module_name).absolute()
+            
+            # creates the source module 
+            source_module = process_raw_source(module_path)
             
             f.write(
-                f"import {source_module_name} as {module_name}\n"
+                f"import {source_module.parent.name}.{source_module.name[:-3]} as {module_path.name[:-3]}\n"
             )
+            
+            
+def get_from_config_file(key: str) -> Any | None:
+    # open and get contents of file
+    config_data: Dict[str, Any] | None = tomli.load(open(CONFIG_FILE_NAME, "rb"))
+    
+    # check if file has contents and is a dict
+    if not config_data or not isinstance(config_data, dict):
+        print(
+            "Error: No configuration found at:", CONFIG_FILE_NAME,
+            "\n\t Make sure the config file has the proper format"
+        )
+        exit(1)
+        
+    return config_data.get(key)
+        
+        
+    

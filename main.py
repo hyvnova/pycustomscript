@@ -6,11 +6,8 @@ if not __name__ == "__main__":
 import argparse
 
 #local modules
-from src.interpreter import run
-from src.parseconfig import parse_config_file
-
-# CONSTANT OF DEFAULT BEHAVIOR --------------------- <!> ----------------------------
-CONFIG_FILE_NAME = "config.toml" # <!> this needs to change
+from src.interpreter import run, system, Path
+from src.parseconfig import parse_config_file, get_from_config_file
 
 
 
@@ -22,15 +19,16 @@ parser = argparse.ArgumentParser(
 )
 
 
-parser.add_argument("action", default="run", 
+parser.add_argument(
+    "action", 
+    default="run", 
+    
     # COMMAND LIST  ---------------------------- <!> ---------------------------------
     choices=[
-        "run",
-        "prepare"
+        "run"
     ]
 )
 parser.add_argument("-f", "--filename", required=False)
-
 
 
 # MANAGE COMMAND
@@ -40,13 +38,23 @@ args = parser.parse_args()
 # RUN COMMAND
 if args.action == "run":
     
-    if not args.filename:
-        print("\t Missing -f/--filename argument: File that  will be run")
+    # Prepares all modules listed in the config file
+    parse_config_file()    
     
-    run(args.filename)
+    # file that'd be ran
+    entry_files = args.filename
+    prepare: bool = get_from_config_file("prepre")
     
-# PREPARE COMMAND: Prepares the all modules listed in the config file
-elif args.action == "prepare":
+    if not entry_files:
+        entry_files = get_from_config_file("run")
     
-    parse_config_file(CONFIG_FILE_NAME)
-    
+    if isinstance(entry_files, str):
+        entry_files = [entry_files]
+        
+    for file in entry_files:
+        
+        if prepare:
+            run(file)
+            
+        else:
+            system(f"py {Path(file).absolute()}")

@@ -1,4 +1,8 @@
 
+# file that will be runned by default if no file is passed on the run command
+run = "tests/main.py" # list[str] | str
+prepare = false # decides if file at run should be prepared (has PyCS code) or not; this may broke imports
+
 [ModuleImport]
 
 # "package" module name
@@ -8,6 +12,6 @@ name = "tests/origin"
 modules = [
   
   # modules that modules.py will import
-  "tests/test",
-  "tests/test2"
+  "tests/funcs.py",
 ]
+

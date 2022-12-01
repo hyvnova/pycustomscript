@@ -1,28 +1,29 @@
-from .patterns import patterns
-import time
 from pathlib import Path
 from importlib import import_module
+from importlib.machinery import SourceFileLoader
+from os import system, mkdir
+
+# local
+from .patterns import patterns
+
 
 def process_raw_source(
-    file: str | Path, 
-    output_file: str = "__source_{filename}", 
-    timeit: bool = False
+    file: Path | str, 
+    output_file: str = "__source__/{filename}"
 ) ->  Path:
     """
     Takes the given `raw_source` and proecesses it to created a Python runable source file.
-    Returns source file name
+    Returns the source absolute path
     """
-    if timeit:
-        time_start = time.time()
-        cpu_time_start = time.process_time()
-        
-
-    if isinstance(file, str): file = Path(file)
+    if isinstance(file, str): 
+        if not file.endswith(".py"):
+            file += ".py"
+            
+        file = Path(file).absolute()
 
     # format output file name
-    output_file = file.parent / output_file.format(filename=Path(file).name)
-    print(output_file)
-
+    output_file: Path = file.parent / output_file.format(filename=Path(file).name)
+    
     # file code
     raw_source = open(file, "r").read()
     
@@ -42,36 +43,35 @@ def process_raw_source(
 
         source += line + "\n"
 
-
+    # create __source__ folder if not exists
+    if not output_file.parent.exists():
+        mkdir(output_file.parent) 
 
     # apply patterns and save source
     with open(output_file, "w") as f:
+        
         for pattern_handler in patterns:
             
             source = pattern_handler(source)
             
         f.write(source)
     
-    if timeit:
-        time_end = time.time()
-        cpu_time_end = time.process_time()
+    return output_file.absolute()
 
-        print(f"TIME TAKEN TO BUILD SOURCE:\n\tTOTAL TIME: {time_end - time_start}\n\tCPU TIME: {cpu_time_end - cpu_time_start}")
-
-    return output_file
-
-def run(file: str, __source_file: str = None) -> None:
+def run(file: Path | str, __source_file: str = None) -> None:
     """
-    Runs the code given using CustomScript Sintax
+    Runs the code given using CustomScript Interpreter
     """
     if not __source_file:
         __source_file = process_raw_source(file)
-        
-    exec(open(__source_file, "r").read())
+    
+    system(f"py {__source_file}")
           
-def import_from_path(path: Path) -> str:
+def import_from_path(module_name: str, path: Path) -> str:
     # should convert the pass to a python import pass and import that path
-    pass
+    return SourceFileLoader(module_name, path).load_module()
+
+
               
 def prepare_module(file: str):
     """
