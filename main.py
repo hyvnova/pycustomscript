@@ -1,44 +1,52 @@
-from patterns import patterns
-import time
+if not __name__ == "__main__":
+    print("THIS FILE SHOULD NOT BE IMPORTED, IS SUPPOSED TO BE RUNNED DIRECTLY")        
+    exit(0)
 
 
-def run(raw_source: str, timeit: bool = False) -> None:
-    """
-    Runs the code given using CustomScript Sintax
-    """
-    if timeit:
-        time_start = time.time()
-        cpu_time_start = time.process_time()
+import argparse
 
-    source = ""
+#local modules
+from interpreter import run
+from parseconfig import parse_config_file
 
-    # clean lines
-    for line in raw_source.split("\n"):
-
-        # skip empty lines or comments
-        if not line.strip() or line.startswith("#"):
-            continue
-
-        # remove commet
-        if "#" in line:
-            line = line.split("#")[0]
-
-        source += line + "\n"
+# CONSTANT OF DEFAULT BEHAVIOR --------------------- <!> ----------------------------
+CONFIG_FILE_NAME = "config.yaml" # <!> this needs to change
 
 
-    for pattern_handler in patterns:
-        source = pattern_handler(source)
 
-    # save source
-    with open("__source.py", "w") as f:
-        f.write(source)
+# argument parse for taking and managing command from Command line
+parser = argparse.ArgumentParser(
+    prog = 'main.py',
+    description = 'run, prepare or manage how the PyCustomScript interpreter works',
+    epilog = 'check help.md to see the list a explanation of all commands'
+)
 
-    if timeit:
-        time_end = time.time()
-        cpu_time_end = time.process_time()
 
-        print(f"TIME TAKEN TO BUILD SOURCE:\n\tTOTAL TIME: {time_end - time_start}\n\tCPU TIME: {cpu_time_end - cpu_time_start}")
+parser.add_argument("action", default="run", 
+    # COMMAND LIST  ---------------------------- <!> ---------------------------------
+    choices=[
+        "run",
+        "prepare"
+    ]
+)
+parser.add_argument("-f", "--filename", required=False)
 
-    exec(source)
-        
-            
+
+
+# MANAGE COMMAND
+
+args = parser.parse_args()
+
+# RUN COMMAND
+if args.action == "run":
+    
+    if not args.filename:
+        print("\t Missing -f/--filename argument: File that  will be run")
+    
+    run(args.filename)
+    
+# PREPARE COMMAND: Prepares the all modules listed in the config file
+elif args.action == "prepare":
+    
+    parse_config_file(CONFIG_FILE_NAME)
+    

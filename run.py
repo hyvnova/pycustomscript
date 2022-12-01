@@ -1,3 +1,3 @@
-from main import run
+from interpreter import run
 
-run(open("test.py", "r").read())
+run("test.py")

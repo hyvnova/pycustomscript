@@ -48,9 +48,9 @@ def pattern_handler(source: str) -> str:
 
         # one assing
         else:
-            sentence = f'{key} = {obj}["{key}"]'
+            sentence = f'{key} = {obj}.get("{key}", None)'
 
-        source = source[:s] + "\n" + sentence + "\n" + source[e:]
+        source = source[:s] + sentence  + source[e:]
 
 
     return source
