@@ -1,6 +1,0 @@
-ModuleImport:
-
-  # file which will import module
-  modules:
-    # modules that modules.py will import
-    - 'test'

@@ -1,7 +1,15 @@
 
-from typing import Dict, Any
-import yaml
+from typing import Dict, Any, List
+import tomli
 from dataclasses import dataclass
+from pathlib import Path
+
+# local modules
+from .interpreter import prepare_module
+
+#  CONTANST ------------------------ <!>
+DEFAULT_PACKAGE_MODULE_NAME = "origin"
+
 
 @dataclass
 class Field:
@@ -20,7 +28,10 @@ to be imported",
 )
 
 
+
+
 class Errors:
+    
     def MissingField(field: Field) -> None:
         print("Error > Missing Field:", MODULE_IMPORT.name)
         
@@ -30,14 +41,13 @@ class Errors:
         )
 
         exit(1)
+        
 
 # main function     ------------------------------ <!> ------------------------------
 def parse_config_file(file: str):
     # open and get contents of file
-    config_data: Dict[str | None, Any] | None = yaml.load(
-        open(file, "r").read(), 
-        yaml.Loader
-    )
+    config_data: Dict[str, Any] | None = tomli.load(open(file, "rb"))
+    
     
     # check if file has contents and is a dict
     if not config_data or not isinstance(config_data, dict):
@@ -49,9 +59,21 @@ def parse_config_file(file: str):
         
     
     # Parse module import
-    if not config_data.get(MODULE_IMPORT.name):
+    if not (module_import := config_data.get(MODULE_IMPORT.name)):
         Errors.MissingField(MODULE_IMPORT)
         
-
+    name: str = module_import.get("name", DEFAULT_PACKAGE_MODULE_NAME)    
+    modules: List[str] = module_import.get("modules", [])
+    
+    
+    # Create package module
+    with open(name + ".py", "w", encoding="utf-8") as f:
+             
+        for module_name in modules:
             
-    print(config_data)
+            # creates the source module and gets the name of it
+            source_module_name = Path(prepare_module(module_name + ".py").__file__).name[:-3]
+            
+            f.write(
+                f"import {source_module_name} as {module_name}\n"
+            )

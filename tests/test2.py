@@ -1,0 +1,1 @@
+print("osmantus wine")

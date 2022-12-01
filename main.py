@@ -6,11 +6,11 @@ if not __name__ == "__main__":
 import argparse
 
 #local modules
-from interpreter import run
-from parseconfig import parse_config_file
+from src.interpreter import run
+from src.parseconfig import parse_config_file
 
 # CONSTANT OF DEFAULT BEHAVIOR --------------------- <!> ----------------------------
-CONFIG_FILE_NAME = "config.yaml" # <!> this needs to change
+CONFIG_FILE_NAME = "config.toml" # <!> this needs to change
 
 
 

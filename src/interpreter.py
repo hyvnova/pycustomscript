@@ -1,8 +1,7 @@
-from patterns import patterns
+from .patterns import patterns
 import time
 from pathlib import Path
 from importlib import import_module
-from typing import Tuple
 
 def process_raw_source(
     file: str | Path, 
@@ -21,7 +20,8 @@ def process_raw_source(
     if isinstance(file, str): file = Path(file)
 
     # format output file name
-    output_file = output_file.format(filename=Path(file).name)
+    output_file = file.parent / output_file.format(filename=Path(file).name)
+    print(output_file)
 
     # file code
     raw_source = open(file, "r").read()
@@ -68,12 +68,16 @@ def run(file: str, __source_file: str = None) -> None:
         __source_file = process_raw_source(file)
         
     exec(open(__source_file, "r").read())
+          
+def import_from_path(path: Path) -> str:
+    # should convert the pass to a python import pass and import that path
+    pass
               
 def prepare_module(file: str):
     """
     Creates CustomScript `module` off the given `file`
     """
     source_file = process_raw_source(file)
-    return import_module(source_file[:-3])
+    return import_module(source_file.name[:-3])
 
 

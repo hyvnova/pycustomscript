@@ -1,0 +1,13 @@
+
+[ModuleImport]
+
+# "package" module name
+name = "tests/origin"
+
+# file which will import module
+modules = [
+  
+  # modules that modules.py will import
+  "tests/test",
+  "tests/test2"
+]
