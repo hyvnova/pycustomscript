@@ -1,4 +1,4 @@
-if not __name__ == "__main__":
+if __name__ != "__main__":
     print("THIS FILE SHOULD NOT BE IMPORTED, IS SUPPOSED TO BE RUNNED DIRECTLY")        
     exit(0)
 
