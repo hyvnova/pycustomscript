@@ -1,4 +1,4 @@
-if not __name__ == "__main__":
+if __name__ != "__main__":
     print("THIS FILE SHOULD NOT BE IMPORTED, IS SUPPOSED TO BE RUNNED DIRECTLY")        
     exit(0)
 
@@ -44,7 +44,8 @@ if args.action == "run":
     
     # file that'd be ran
     entry_files = args.filename
-    prepare: bool = get_from_config_file("prepre")
+    prepare: bool = get_from_config_file("prepare")
+    
     
     if not entry_files:
         entry_files = get_from_config_file("run")
@@ -58,4 +59,4 @@ if args.action == "run":
             run(file)
             
         else:
-            system(f"py {Path(file).absolute()}")
+            system(f"python {Path(file).absolute()}")

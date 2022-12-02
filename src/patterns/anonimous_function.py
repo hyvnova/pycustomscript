@@ -18,7 +18,10 @@ def pattern_handler(source: str) -> str:
         \)                      # Function Arguments End Parenthesis
         \s?                     # Optional Whitespace
         =>                      # Arrow token (only used for sintax)
-        (.+)                    # function Body
+        \s?                     
+        {                       # Start of function Body
+        ([-!$%^&*()_+|~=`\[\]:";'<>?,.\/a-zA-Z0-9\s]+) # function Body
+        }                       # End of function Body
         """,
         re.VERBOSE
     ) 
@@ -56,7 +59,7 @@ def pattern_handler(source: str) -> str:
             func += "\n\t".join(func_sentences)
 
         # replace sintax with func name
-        source = source[:s] + func_name + func_end + source[e:]
+        source = source[:s] + func_name + func_end + source[e:] + "\n"
 
         # append func at source (this happens after because start and end world change)
         source = func + "\n" + source

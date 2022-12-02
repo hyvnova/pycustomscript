@@ -1,6 +1,10 @@
+if __name__ == "__main__":
+    print(f"This file ({__name__}) should not be executed directly")
+    exit(1)
+
+
 from pathlib import Path
 from importlib import import_module
-from importlib.machinery import SourceFileLoader
 from os import system, mkdir
 
 # local
@@ -25,7 +29,7 @@ def process_raw_source(
     output_file: Path = file.parent / output_file.format(filename=Path(file).name)
     
     # file code
-    raw_source = open(file, "r").read()
+    raw_source = open(file, "r", encoding="utf-8").read()
     
     # output source
     source = ""
@@ -48,7 +52,7 @@ def process_raw_source(
         mkdir(output_file.parent) 
 
     # apply patterns and save source
-    with open(output_file, "w") as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         
         for pattern_handler in patterns:
             
@@ -65,13 +69,7 @@ def run(file: Path | str, __source_file: str = None) -> None:
     if not __source_file:
         __source_file = process_raw_source(file)
     
-    system(f"py {__source_file}")
-          
-def import_from_path(module_name: str, path: Path) -> str:
-    # should convert the pass to a python import pass and import that path
-    return SourceFileLoader(module_name, path).load_module()
-
-
+    system(f"python {__source_file}")
               
 def prepare_module(file: str):
     """

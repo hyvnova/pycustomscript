@@ -1,3 +1,7 @@
+if __name__ == "__main__":
+    print(f"This file ({__name__}) should not be executed directly")
+    exit(1)
+
 
 from typing import Dict, Any, List
 import tomli
@@ -10,9 +14,6 @@ from .interpreter import process_raw_source
 #  CONTANST ------------------------ <!>
 DEFAULT_PACKAGE_MODULE_NAME = "origin"
 CONFIG_FILE_NAME = "config.toml" # <!> this needs to change
-
-
-
 
 
 
@@ -36,16 +37,16 @@ to be imported",
 
 class Errors:
     
-    def MissingField(field: Field) -> None:
-        print("Error > Missing Field:", MODULE_IMPORT.name)
+    @staticmethod
+    def missing_field(field: Field) -> None:        
+        print("Error > Missing Field:", field.name)
         
         print(
-            f"\tField Description: {MODULE_IMPORT.description} \n",
-            f"\tField Type: {MODULE_IMPORT.type}",
+            f"\tField Description: {field.description} \n",
+            f"\tField Type: {field.type}",
         )
 
         exit(1)
-        
 
 # main function     ------------------------------ <!> ------------------------------
 def parse_config_file():
@@ -61,14 +62,14 @@ def parse_config_file():
         )
         exit(1)
         
-    
     # Parse module import
     if not (module_import := config_data.get(MODULE_IMPORT.name)):
-        Errors.MissingField(MODULE_IMPORT)
+        
+        Errors.missing_field(module_import) # this ends the program
+        
         
     name: str = module_import.get("name", DEFAULT_PACKAGE_MODULE_NAME)    
     modules: List[str] = module_import.get("modules", [])
-    
     
     # Create package module
     with open(name + ".py", "w", encoding="utf-8") as f:
