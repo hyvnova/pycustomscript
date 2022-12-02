@@ -69,7 +69,7 @@ def run(file: Path | str, __source_file: str = None) -> None:
     if not __source_file:
         __source_file = process_raw_source(file)
     
-    system(f"py {__source_file}")
+    system(f"python {__source_file}")
               
 def prepare_module(file: str):
     """
