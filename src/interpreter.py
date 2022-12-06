@@ -28,6 +28,14 @@ def process_raw_source(
     # format output file name
     output_file: Path = file.parent / output_file.format(filename=Path(file).name)
     
+    print(f"{output_file=}")
+    
+    # create init at output file
+    if not output_file.parent.exists():
+        mkdir(output_file.parent)
+        
+        open(output_file.parent / "__init__.py", "w", encoding="utf-8").write("# THIS FILE TELL PYTHON THAT THIS IS A MODULE") 
+        
     # file code
     raw_source = open(file, "r", encoding="utf-8").read()
     

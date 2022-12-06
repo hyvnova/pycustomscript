@@ -10,8 +10,7 @@ name = "tests/origin"
 
 # file which will import module
 modules = [
-  
   # modules that modules.py will import
   "tests/funcs.py",
 ]
-
+to_cython = true # decides if convert the modules to cython 
