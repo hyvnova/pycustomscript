@@ -76,12 +76,14 @@ def parse_config_file():
     # Create package module
     with open(name + ".py", "w", encoding="utf-8") as f:
              
-        for module_name in modules:
+        for module in modules:
+    
+            # at the processing, the .py is required to find the module as a file
+            if not module.endswith(".py"):
+                module += ".py"
             
-            if not module_name.endswith(".py"):
-                module_name += ".py"
-            
-            module_path = Path(module_name).absolute()
+            module_path = Path(module).absolute()
+            module_name = module_path.name[:-3]
             
             # creates the source module 
             source_module = process_raw_source(module_path)
@@ -89,7 +91,7 @@ def parse_config_file():
             #convert to cython
             if module_import.get("to_cython", True):
                 
-                # hold source module path to delete it later    
+                # hold source module path to delete it when done   
                 source_module_temp = source_module
                 
                 source_module = build_cython_module(
@@ -99,7 +101,7 @@ def parse_config_file():
                 # delete source module (PyCS module) to avoid conflict with cython module which has the same name
                 os.remove(source_module_temp)
                 del source_module_temp
-                module_name = source_module.name.replace(".py", "")
+                module_name = source_module.name.replace(".py", "")            
                 
             # write imports at origin package
             f.write(
