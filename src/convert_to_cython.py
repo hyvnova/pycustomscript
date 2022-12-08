@@ -6,7 +6,7 @@ from Cython.Build import cythonize
 
 def create_setup_py(file: Path):
     return '''
-from distutils.core import setup
+from setuptools import setup
 from Cython.Build import cythonize
 
 setup(

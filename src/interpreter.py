@@ -31,7 +31,6 @@ def process_raw_source(
     
     # clear __source__ dir
     if output_file.parent.name == "__source__":
-        print("Clearing source")
         try:
             remove(output_file.parent)
         except OSError as e:
