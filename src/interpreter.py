@@ -5,7 +5,7 @@ if __name__ == "__main__":
 
 from pathlib import Path
 from importlib import import_module
-from os import system, mkdir
+from os import system, mkdir, remove
 
 # local
 from .patterns import patterns
@@ -28,6 +28,20 @@ def process_raw_source(
     # format output file name
     output_file: Path = file.parent / output_file.format(filename=Path(file).name)
     
+    
+    # clear __source__ dir
+    if output_file.parent.name == "__source__":
+        try:
+            remove(output_file.parent)
+        except OSError as e:
+            print("Error: %s : %s" % (output_file.parent, e.strerror))
+        
+    # create init at output file
+    if not output_file.parent.exists():
+        mkdir(output_file.parent)
+        
+        open(output_file.parent / "__init__.py", "w", encoding="utf-8").write("# THIS FILE TELL PYTHON THAT THIS IS A MODULE") 
+        
     # file code
     raw_source = open(file, "r", encoding="utf-8").read()
     

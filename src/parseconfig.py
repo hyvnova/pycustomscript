@@ -3,6 +3,7 @@ if __name__ == "__main__":
     exit(1)
 
 
+import os
 from typing import Dict, Any, List
 import tomli
 from dataclasses import dataclass
@@ -10,6 +11,7 @@ from pathlib import Path
 
 # local modules
 from .interpreter import process_raw_source
+from .convert_to_cython import build_cython_module
 
 #  CONTANST ------------------------ <!>
 DEFAULT_PACKAGE_MODULE_NAME = "origin"
@@ -77,26 +79,37 @@ def parse_config_file():
     # Create package module
     with open(name + ".py", "w", encoding="utf-8") as f:
              
-        for module_name in modules:
+        for module in modules:
+    
+            # at the processing, the .py is required to find the module as a file
+            if not module.endswith(".py"):
+                module += ".py"
             
-            if not module_name.endswith(".py"):
-                module_name += ".py"
-            
-            module_path = Path(module_name).absolute()
+            module_path = Path(module).absolute()
+            module_name = module_path.name[:-3]
             
             # creates the source module 
             source_module = process_raw_source(module_path)
             
-            if import_all:
-                f.write(
-                    f"from {source_module.parent.name}.{source_module.name[:-3]} import *\n"
+            #convert to cython
+            if module_import.get("to_cython", True):
+                
+                # hold source module path to delete it when done   
+                source_module_temp = source_module
+                
+                source_module = build_cython_module(
+                    source_module_temp
                 )
                 
-            else:
-                f.write(
-                    f"import {source_module.parent.name}.{source_module.name[:-3]} as {module_path.name[:-3]}\n"
-                )
+                # delete source module (PyCS module) to avoid conflict with cython module which has the same name
+                os.remove(source_module_temp)
+                del source_module_temp
+                module_name = source_module.name.replace(".py", "")            
                 
+            # write imports at origin package
+            f.write(
+                f"from {source_module.parent.name} import {module_name}\n"
+            )
             
 def get_from_config_file(key: str) -> Any | None:
     # open and get contents of file

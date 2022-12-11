@@ -1,23 +1,15 @@
 
 # file that will be runned by default if no file is passed on the run command
 run = "tests/main.py" # list[str] | str
-prepare = false # decides if file at run should be prepared (has PyCS code) or not; this may break imports
+prepare = false # decides if file at <run> should be prepared (has PyCS code) or not; this may break imports
 
 [ModuleImport]
-
 # "package" module name
-name = "tests/origin"
+name = "tests/origin" # this file is where all files that use PyCS will be imported
 
-# file which will import module
+# files which will be importar; they will be prepared
 modules = [
-  
-  # modules that package modulewill import
   "tests/funcs.py",
 ]
 
-# if true then: from module import *
-# if false: import module 
-import_all = true
-
-
-
+to_cython = true # decides if convert the modules to cython 

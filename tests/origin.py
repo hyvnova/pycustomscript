@@ -1,1 +1,1 @@
-from __source__.funcs import *
+from __source__ import funcs
