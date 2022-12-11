@@ -1,4 +1,4 @@
-from origin import funcs
+from origin import get_name, is_even
 
 
-print(funcs.get_name({"name": "Jonh", "other": [1, 2, 3]}))
+print(is_even(12))

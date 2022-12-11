@@ -59,7 +59,7 @@ def pattern_handler(source: str) -> str:
             func += "\n\t".join(func_sentences)
 
         # replace sintax with func name
-        source = source[:s] + func_name + func_end + source[e:] + "\n"
+        source = source[:s] + func_name + func_end + source[e:]
 
         # append func at source (this happens after because start and end world change)
         source = func + "\n" + source

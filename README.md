@@ -23,11 +23,4 @@ even_numbers: List[int] = list(filter(
 ))
 ```
 ## Optimization Patterns
-- Exponent to Pow
-```py
-# Original
-n = x * x * x + 23 * 5
-
-# Turns  into
-n = pow(x,3) + 23 * 5
-```
+Coming soon...

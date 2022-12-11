@@ -71,6 +71,9 @@ def parse_config_file():
     name: str = module_import.get("name", DEFAULT_PACKAGE_MODULE_NAME)    
     modules: List[str] = module_import.get("modules", [])
     
+    
+    import_all: bool = module_import.get("import_all", False)
+    
     # Create package module
     with open(name + ".py", "w", encoding="utf-8") as f:
              
@@ -84,10 +87,16 @@ def parse_config_file():
             # creates the source module 
             source_module = process_raw_source(module_path)
             
-            f.write(
-                f"import {source_module.parent.name}.{source_module.name[:-3]} as {module_path.name[:-3]}\n"
-            )
-            
+            if import_all:
+                f.write(
+                    f"from {source_module.parent.name}.{source_module.name[:-3]} import *\n"
+                )
+                
+            else:
+                f.write(
+                    f"import {source_module.parent.name}.{source_module.name[:-3]} as {module_path.name[:-3]}\n"
+                )
+                
             
 def get_from_config_file(key: str) -> Any | None:
     # open and get contents of file

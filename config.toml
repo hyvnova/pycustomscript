@@ -11,7 +11,13 @@ name = "tests/origin"
 # file which will import module
 modules = [
   
-  # modules that modules.py will import
+  # modules that package modulewill import
   "tests/funcs.py",
 ]
+
+# if true then: from module import *
+# if false: import module 
+import_all = true
+
+
 
