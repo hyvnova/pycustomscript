@@ -11,7 +11,7 @@ from Cython.Build import cythonize
 
 setup(
     ext_modules = cythonize(
-        "{file}",
+        r"{file}",
         language_level = "3",
         quiet = True
     )
@@ -30,10 +30,10 @@ def build_cython_module(file: Path | str) -> Path:
     try:
         os.remove(BUILD_DIR)
     except OSError as e:
-        print("Error: %s : %s" % (BUILD_DIR, e.strerror))
+        print(f"WARNING: Could not clear {BUILD_DIR}\n\tError raised -> {e}")
 
     # create init file
-    open(HERE / "__init__.py", "w", encoding="utf-8").write("# THIS FILE TELL PYTHON THAT THIS IS A MODULE")
+    open(HERE / "__init__.py", "w").write("# THIS FILE TELL PYTHON THAT THIS IS A MODULE")
     
     # if build dir doesnt exists, create it
     if not BUILD_DIR.exists():

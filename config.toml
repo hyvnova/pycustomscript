@@ -11,5 +11,5 @@ name = "tests/origin" # this file is where all files that use PyCS will be impor
 modules = [
   "tests/funcs.py",
 ]
-
-to_cython = true # decides if convert the modules to cython 
+custom_builtins = true
+to_cython = false # decides if convert the modules to cython 

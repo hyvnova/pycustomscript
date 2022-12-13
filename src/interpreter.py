@@ -19,6 +19,7 @@ def process_raw_source(
     Takes the given `raw_source` and proecesses it to created a Python runable source file.
     Returns the source absolute path
     """
+    
     if isinstance(file, str): 
         if not file.endswith(".py"):
             file += ".py"
@@ -34,7 +35,8 @@ def process_raw_source(
         try:
             remove(output_file.parent)
         except OSError as e:
-            print("Error: %s : %s" % (output_file.parent, e.strerror))
+            print(f"WARNING: Could not clear {output_file.parent}\n\tError raised -> {e}")
+            
         
     # create init at output file
     if not output_file.parent.exists():

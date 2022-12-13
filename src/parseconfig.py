@@ -12,6 +12,7 @@ from pathlib import Path
 # local modules
 from .interpreter import process_raw_source
 from .convert_to_cython import build_cython_module
+from .custom_builtins import set_builtins
 
 #  CONTANST ------------------------ <!>
 DEFAULT_PACKAGE_MODULE_NAME = "origin"
@@ -26,7 +27,7 @@ class Field:
     type: str = str
 
 
-# Field Names needed at config file; this is used for renaming
+# Field Names needed at config file
 MODULE_IMPORT = Field(
     name = "ModuleImport", 
     description = "List of Modules that import other CustomScript Modules. Prepares that listed modules \
@@ -36,7 +37,7 @@ to be imported",
 )
 
 
-
+   
 class Errors:
     
     @staticmethod
@@ -76,7 +77,7 @@ def parse_config_file():
     
     import_all: bool = module_import.get("import_all", False)
     
-    # Create package module
+    # Create package module (aka origin)
     with open(name + ".py", "w", encoding="utf-8") as f:
              
         for module in modules:
@@ -90,6 +91,10 @@ def parse_config_file():
             
             # creates the source module 
             source_module = process_raw_source(module_path)
+            
+            # add custom builtins
+            if module_import.get("custom_builtins", False):
+                set_builtins(source_module)
             
             #convert to cython
             if module_import.get("to_cython", True):
@@ -110,6 +115,8 @@ def parse_config_file():
             f.write(
                 f"from {source_module.parent.name} import {module_name}\n"
             )
+
+
             
 def get_from_config_file(key: str) -> Any | None:
     # open and get contents of file

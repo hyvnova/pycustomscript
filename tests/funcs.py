@@ -1,3 +1,7 @@
+
+print(dir(dict))
+
+
 def fibonacci(n: int) -> int:
     a, b = 0, 1
     for i in range(n):
@@ -10,3 +14,7 @@ def is_prime(n: int) -> bool:
         if (n % i) == 0:
             return False
     return True
+
+
+
+print(dict)
