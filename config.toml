@@ -8,4 +8,4 @@ modules = [
 ]
 
 custom_builtins = true
-to_cython = false # decides if convert the modules to cython 
+to_cython = true # decides if convert the modules to cython 
