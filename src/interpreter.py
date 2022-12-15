@@ -4,11 +4,12 @@ if __name__ == "__main__":
 
 
 from pathlib import Path
-from importlib import import_module
 from os import system, mkdir, remove
 
 # local
 from .patterns import patterns
+from .cythonizer import convert_to_cython
+from .custom_builtins import set_builtins
 
 
 def process_raw_source(
@@ -42,7 +43,6 @@ def process_raw_source(
     if not output_file.parent.exists():
         mkdir(output_file.parent)
         
-        open(output_file.parent / "__init__.py", "w", encoding="utf-8").write("# THIS FILE TELL PYTHON THAT THIS IS A MODULE") 
         
     # file code
     raw_source = open(file, "r", encoding="utf-8").read()
@@ -78,20 +78,26 @@ def process_raw_source(
     
     return output_file.absolute()
 
-def run(file: Path | str, __source_file: str = None) -> None:
+def run(file: Path | str, __source_file: str = None, custom_builtins: bool = False, to_cython: bool = True) -> None:
     """
     Runs the code given using CustomScript Interpreter
     """
+    
     if not __source_file:
-        __source_file = process_raw_source(file)
+        __source_file: Path = process_raw_source(file)
+        
+    # use custom builtins
+    if custom_builtins:
+        set_builtins(__source_file)
+        
+    # convert to cython
+    if to_cython:
+        convert_to_cython(__source_file)
+    
     
     system(f"python {__source_file}")
               
-def prepare_module(file: str):
-    """
-    Creates CustomScript `module` off the given `file`
-    """
-    source_file = process_raw_source(file)
-    return import_module(source_file.name[:-3])
+   
+    
 
 

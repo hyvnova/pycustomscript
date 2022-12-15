@@ -1,8 +1,7 @@
-from distutils.command.build import build
+
 from pathlib import Path
 import os
-from distutils.core import setup
-from Cython.Build import cythonize
+
 
 def create_setup_py(file: Path):
     return '''
@@ -32,9 +31,6 @@ def build_cython_module(file: Path | str) -> Path:
     except OSError as e:
         print(f"WARNING: Could not clear {BUILD_DIR}\n\tError raised -> {e}")
 
-    # create init file
-    open(HERE / "__init__.py", "w").write("# THIS FILE TELL PYTHON THAT THIS IS A MODULE")
-    
     # if build dir doesnt exists, create it
     if not BUILD_DIR.exists():
         os.mkdir(BUILD_DIR)
@@ -52,3 +48,13 @@ def build_cython_module(file: Path | str) -> Path:
     # Return the path to the compiled Cython module
     return HERE / name # file extension is not needed, because python will give priority to a .so file 
 
+
+def convert_to_cython(source_module: Path) -> None:
+    # hold source module path to delete it when done   
+    source_module_temp = source_module
+    
+    source_module = build_cython_module(source_module_temp)
+    
+    # delete source module (PyCS module) to avoid conflict with cython module which has the same name
+    os.remove(source_module_temp)
+    del source_module_temp      

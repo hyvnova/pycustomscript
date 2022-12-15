@@ -3,45 +3,57 @@ if __name__ == "__main__":
     exit(1)
 
 
-import os
-from typing import Dict, Any, List
+from typing import Dict, Any, List, NoReturn
 import tomli
 from dataclasses import dataclass
-from pathlib import Path
 
 # local modules
-from .interpreter import process_raw_source
-from .convert_to_cython import build_cython_module
-from .custom_builtins import set_builtins
+from .module_manager import process_modules, ModulePackageConfig
 
 #  CONTANST ------------------------ <!>
 DEFAULT_PACKAGE_MODULE_NAME = "origin"
 CONFIG_FILE_NAME = "config.toml" # <!> this needs to change
 
 
-
 @dataclass
 class Field:
+    """
+    Descriptor object of a config file field
+    """
     name: str
     description: str = ""
-    type: str = str
+    type: Any = str
+    required: bool = True
 
 
-# Field Names needed at config file
-MODULE_IMPORT = Field(
-    name = "ModuleImport", 
-    description = "List of Modules that import other CustomScript Modules. Prepares that listed modules \
-to be imported",
-
-    type = dict.__name__
+# field at config file which should have the list modules that will processed
+MODULES_FIELD: Field = Field(
+    name = "modules", 
+    description = "List of Modules that import other CustomScript Modules. Prepares that listed modules to be imported",
+    type = list
 )
-
 
    
 class Errors:
     
     @staticmethod
-    def missing_field(field: Field) -> None:        
+    def no_config() -> NoReturn:
+        """
+        When theres no config or not propre format on config file
+        """
+        print(
+            "Error: No configuration found at:", CONFIG_FILE_NAME,
+            "\n\t Make sure the config file has the proper format"
+        )
+        exit(1)
+    
+    @staticmethod
+    def missing_field(field: Field) -> NoReturn:
+        """
+        Shows the information about the missing field.
+        If `field.required` is `True` exits the program
+        """
+        
         print("Error > Missing Field:", field.name)
         
         print(
@@ -49,10 +61,48 @@ class Errors:
             f"\tField Type: {field.type}",
         )
 
-        exit(1)
+        if field.required:
+            exit(1)
+            
+    @staticmethod
+    def wrong_field_type(field: Field) -> NoReturn:
+        """
+        Shows the right type expected at the field
+        """
+        
+        print("Error > Wrong Field Type/Format:", field.name)
+        
+        print(
+            f"\tExpected type: {field.type.__name__}\n",
+            f"\tField Description: {field.description}"
+        )
+        
+        
 
+def get_field(field: Field, config_data: Dict[str, Any]) -> Any:
+    """
+    Gets a field value from `config_data` After: Checking it's existance and type
+    """
+    
+    value: Any | None = config_data.get(field.name, None)
+    
+    # field doesnt exists
+    if not value:
+        Errors.missing_field(field) 
+        
+    # field has wrong type
+    if not isinstance(value, field.type):
+        Errors.wrong_field_type(field)
+        
+    return value
+        
+            
 # main function     ------------------------------ <!> ------------------------------
-def parse_config_file():
+def parse_config_file() -> Dict[str, Any]:
+    """
+    Parses/Processes config data and all fields in it.
+    """
+    
     # open and get contents of file
     config_data: Dict[str, Any] | None = tomli.load(open(CONFIG_FILE_NAME, "rb"))
     
@@ -65,57 +115,15 @@ def parse_config_file():
         )
         exit(1)
         
-    # Parse module import
-    if not (module_import := config_data.get(MODULE_IMPORT.name)):
-        
-        Errors.missing_field(module_import) # this ends the program
-        
-        
-    name: str = module_import.get("name", DEFAULT_PACKAGE_MODULE_NAME)    
-    modules: List[str] = module_import.get("modules", [])
+    # Parse modules
+    modules: List[str] = get_field(MODULES_FIELD, config_data)
     
+    process_modules(
+        modules = modules,
+        options = ModulePackageConfig().get_from(config_data)
+    )
     
-    import_all: bool = module_import.get("import_all", False)
-    
-    # Create package module (aka origin)
-    with open(name + ".py", "w", encoding="utf-8") as f:
-             
-        for module in modules:
-    
-            # at the processing, the .py is required to find the module as a file
-            if not module.endswith(".py"):
-                module += ".py"
-            
-            module_path = Path(module).absolute()
-            module_name = module_path.name[:-3]
-            
-            # creates the source module 
-            source_module = process_raw_source(module_path)
-            
-            # add custom builtins
-            if module_import.get("custom_builtins", False):
-                set_builtins(source_module)
-            
-            #convert to cython
-            if module_import.get("to_cython", True):
-                
-                # hold source module path to delete it when done   
-                source_module_temp = source_module
-                
-                source_module = build_cython_module(
-                    source_module_temp
-                )
-                
-                # delete source module (PyCS module) to avoid conflict with cython module which has the same name
-                os.remove(source_module_temp)
-                del source_module_temp
-                module_name = source_module.name.replace(".py", "")            
-                
-            # write imports at origin package
-            f.write(
-                f"from {source_module.parent.name} import {module_name}\n"
-            )
-
+    return config_data
 
             
 def get_from_config_file(key: str) -> Any | None:
@@ -124,11 +132,7 @@ def get_from_config_file(key: str) -> Any | None:
     
     # check if file has contents and is a dict
     if not config_data or not isinstance(config_data, dict):
-        print(
-            "Error: No configuration found at:", CONFIG_FILE_NAME,
-            "\n\t Make sure the config file has the proper format"
-        )
-        exit(1)
+        Errors.no_config()
         
     return config_data.get(key)
         

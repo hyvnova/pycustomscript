@@ -51,7 +51,6 @@ class list(list):
         
         return new
     
-print(list((1,2,3,4,3,2,1)).split(3))
     
 
     

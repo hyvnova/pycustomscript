@@ -6,6 +6,7 @@ if __name__ != "__main__":
 
 
 import argparse
+from typing import List
 
 #local modules
 from src.interpreter import run, system, Path
@@ -42,23 +43,19 @@ args = parser.parse_args()
 if args.action == "run":
     
     # Prepares all modules listed in the config file
-    parse_config_file()    
-    
-    # file that'd be ran
-    entry_files = args.filename
-    prepare: bool = get_from_config_file("prepare")
+    config_data = parse_config_file()    
     
     
+    # if no entry files then entry files will be got from the config file, in which they could be a list
+    entry_files: str | List[str] = (args.filename or get_from_config_file("run"))
+    
+    # if no entry files if found then raise an error
     if not entry_files:
-        entry_files = get_from_config_file("run")
+        raise ValueError("No file was given at run command or found at config file.")
     
     if isinstance(entry_files, str):
         entry_files = [entry_files]
         
     for file in entry_files:
-        
-        if prepare:
-            run(file)
+        run(file, custom_builtins=config_data.get("custom_builtins"), to_cython=config_data.get("to_cython"))
             
-        else:
-            system(f"python {Path(file).absolute()}")

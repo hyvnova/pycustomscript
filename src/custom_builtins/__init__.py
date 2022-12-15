@@ -3,6 +3,11 @@ from pathlib import Path
 from os import listdir
 from importlib.machinery import SourceFileLoader
 
+# use for type hint with writing real python modules
+from .list import list
+
+
+
 HERE = Path(__file__).parent
 
 CUSTOM_BUILTINS_MODULE_NAME: str = "__custom_builtins__.py"
@@ -23,15 +28,21 @@ def set_builtins(source_file: Path) -> None:
             name = file[:-3]
 
             f.write(f"""
-{name} = getattr(
-    SourceFileLoader(
-        "{name}", # module name
-        r"{(HERE / Path(file).name).absolute()}"
-    ).load_module(), # import buildin module by path
-    
-    "{name}",
-    globals()["__builtins__"].get("{name}") # default value
-)
+try:
+    {name} = getattr(
+        SourceFileLoader(
+            "{name}", # module name
+            r"{(HERE / Path(file).name).absolute()}"
+        ).load_module(), # import buildin module by path
+        
+        "{name}", # builtin name
+        {name} # default value
+    )
+except Exception as e:
+    print("Error while trying to set custom builtins:", e)
+    print("BUILTINS:", globals()["__builtins__"])
+
+
 
 """ + content)
         
