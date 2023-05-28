@@ -2,13 +2,13 @@ import re
 
 def pattern_handler(source: str) -> str:
     """
-    Dict Destructuration
+    Dict Destructuring
     ```py
     obj = {"name": "Jonh", "level" : 2, "other" : "other value"}
     {name, level} = obj
+    print(name, level) # Jonh 2
     ```
     """
-
 
     pattern: re.Pattern = re.compile(
         r"""

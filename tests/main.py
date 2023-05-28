@@ -1,7 +1,12 @@
-from funcs import fibonacci
 
-x = (i) => {
-    None
+
+# testing destruct
+
+d = {
+    "a": (x, y) => {x+y},
+    "b": 2,
+    "c": 3
 }
 
-print(fibonacci(12))
+{a, c} = d
+print(a, c)

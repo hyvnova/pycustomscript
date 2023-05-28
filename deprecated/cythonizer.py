@@ -1,5 +1,6 @@
 from pathlib import Path
-import os
+import os, glob
+from shutil import rmtree
 
 
 def create_setup_py(file: Path):
@@ -31,10 +32,10 @@ def build_cython_module(file: Path | str, quiet: bool = False) -> Path:
     
     # Clear and create source module dir
     try:
-        os.remove(BUILD_DIR)
+        if BUILD_DIR.exists():
+            rmtree(BUILD_DIR)
         
     except OSError as e:
-        
         if not quiet:
             print(f"WARNING: Could not clear {BUILD_DIR}\n\tError raised -> {e}\n")
 
@@ -49,8 +50,10 @@ def build_cython_module(file: Path | str, quiet: bool = False) -> Path:
         )
            
     # Build the Cython extension
-    os.system(f'python {HERE / "setup.py"} build_ext --build-lib {HERE.parent} --build-temp cython_build')
+    os.system(f'python {HERE / "setup.py"} build_ext --build-lib {BUILD_DIR} --build-temp {BUILD_DIR} --quiet')
 
-    # Return the path to the compiled Cython module
-    return HERE / name # file extension is not needed, because python will give priority to a .so file 
+    # Return the path to the compiled Cython module .pyd file
+    path = glob.glob(str(BUILD_DIR / name) + "*" + ".pyd")[0]
+
+    return Path(path).absolute()
 

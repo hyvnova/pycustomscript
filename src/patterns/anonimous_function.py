@@ -6,7 +6,8 @@ def pattern_handler(source: str) -> str:
     Anonimous Functions
     ```py
     (param1, ...) => {
-
+        x = do_something(param1)
+        x * 2 # <- last expression is returned
     }
     ```
     """

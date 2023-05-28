@@ -3,7 +3,6 @@ if __name__ == "__main__":
     exit(1)
 
 
-from glob import glob
 from pathlib import Path
 from os import system, mkdir, remove
 from dataclasses import dataclass
@@ -11,11 +10,8 @@ import sys
 from typing import List, Self
 import ast
 
-from click import option
-
 # local
 from .patterns import patterns
-from .cythonizer import build_cython_module
 from .custom_builtins import set_builtins
 
 def move_path_up(path: Path, n: int) -> Path:
@@ -89,7 +85,6 @@ class ModulePackageConfig:
     instanciating this object with no arguments creates the default creation config
     """
     custom_builtins: bool = False
-    to_cython: bool = True
     quiet: bool = False
     
 
@@ -135,7 +130,6 @@ def process_raw_source(
             remove(output_file.parent)
             
         except OSError as e:
-            
             if not quiet:
                 print(f"WARNING: Could not clear {output_file.parent}\n\tError raised -> {e}\n")
             
@@ -181,9 +175,8 @@ def process_raw_source(
 
 def process_modules(main_file: Path, source_file: Path, options: ModulePackageConfig = ModulePackageConfig()) -> None:
     """
-    Applies PyCS, custom_builtins (if told to do so), build_cython_module (if told to do so) to each file found at imports of `main_file`
+    Applies PyCS, custom_builtins (if told to do so) to each file found at imports of `main_file`
     """
-    
     modules = find_modules(main_file, open(source_file, "r").read())
 
     # Create package module (aka origin)          
@@ -197,10 +190,6 @@ def process_modules(main_file: Path, source_file: Path, options: ModulePackageCo
         # add custom builtins
         if options.custom_builtins:
             set_builtins(source_module)
-        
-        #convert to cython
-        if options.to_cython:
-            build_cython_module(source_module, quiet=options.quiet)
        
 def run(file: Path | str, options: ModulePackageConfig = ModulePackageConfig()) -> None:
     """
@@ -209,30 +198,22 @@ def run(file: Path | str, options: ModulePackageConfig = ModulePackageConfig()) 
     if isinstance(file, str): 
         file = Path(file).absolute()
 
-    # *process main file first because it needs to be ready before trying to find modules on it
-    # creates the source module 
+    # processes main file first because it needs to be ready before trying to find modules on it
     source_file: Path = process_raw_source(file, quiet=options.quiet)
-    
-    #convert to cython
-    if options.to_cython:
-        build_cython_module(source_file, quiet=options.quiet)
         
-        # [TODO] PATH SHOULD CHANGE TO GLOB(parent / name.*.pyd)
-        
-        
-    # Coverts files to pure python, Prepares custom builtins, coverts to cython
+    # Coverts files to pure python, Prepares custom builtins
     process_modules(file, source_file, options=options)
     
-    # add custom builtins; added after to know mess up module search 
+    # add custom builtins; added after to not interfire module search 
     if options.custom_builtins:
         set_builtins(source_file)
-    
+
     # clear console
     if options.quiet:
         system("cls")
     
     if not options.quiet:
-        print(f"\n\t[{source_file} Output]\n")
+        print(f"\n\t[Running: {source_file}]\n")
         
     system(f"python {source_file}")
               
