@@ -13,12 +13,16 @@ HERE = Path(__file__).parent
 CUSTOM_BUILTINS_MODULE_NAME: str = "__custom_builtins__.py"
 
 def set_builtins(source_file: Path) -> None:
-    
+
     with open(source_file, 'r+') as f:
         content = f.read()
         f.seek(0, 0)
         
-        f.write("from importlib.machinery import SourceFileLoader\n")
+        # add custom_builtins path to sys
+        f.write(f"""# [BUILTINS IMPORT]
+import sys
+sys.path.append(r"{HERE.resolve().__str__()}")
+""")
         
         for file in listdir(HERE):
             
@@ -27,22 +31,6 @@ def set_builtins(source_file: Path) -> None:
 
             name = file[:-3]
 
-            f.write(f"""
-try:
-    {name} = getattr(
-        SourceFileLoader(
-            "{name}", # module name
-            r"{(HERE / Path(file).name).absolute()}"
-        ).load_module(), # import buildin module by path
-        
-        "{name}", # builtin name
-        {name} # default value
-    )
-except Exception as e:
-    print("Error while trying to set custom builtins:", e)
-    print("BUILTINS:", globals()["__builtins__"])
+            f.write(f"from {name} import {name}\n")
 
-
-
-""" + content)
-        
+        f.write("# [END BUILTINS IMPORT]\n\n" + content)

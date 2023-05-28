@@ -1,11 +1,7 @@
 
 # file that will be runned by default if no file is passed on the run command
-run = "tests/main.py" # list[str] | str
-
-# files which will be importar; they will be prepared
-modules = [
-  "tests/funcs.py",
-]
+main = "tests/main.py" # str
 
 custom_builtins = true
 to_cython = true # decides if convert the modules to cython 
+quiet = false # if True warning won't be printed

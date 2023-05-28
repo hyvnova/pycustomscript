@@ -1,5 +1,7 @@
-import funcs
+from funcs import fibonacci
 
-print(list((1,2,3,4,3,2,1)).split_at(3))
+x = (i) => {
+    None
+}
 
-    
+print(fibonacci(12))

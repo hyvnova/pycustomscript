@@ -1,4 +1,4 @@
-from typing import Any, List, Self
+from typing import Any, List
 
 
 class list(list):

@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import os
 
@@ -18,7 +17,12 @@ setup(
 '''.format(file=file)
 
 
-def build_cython_module(file: Path | str) -> Path:
+def build_cython_module(file: Path | str, quiet: bool = False) -> Path:
+    """
+    Builds the Cython module off the given `file`. Also Creates a `setup.py` and other required c files to build the module
+    - `file` : File which the cython module will be mode of.
+    -  `quiet` : If `True` warnings won't be printed (Default: `False`)
+    """
     if isinstance(file, str): file = Path(file)
         
     name = file.name[:-3] 
@@ -28,33 +32,25 @@ def build_cython_module(file: Path | str) -> Path:
     # Clear and create source module dir
     try:
         os.remove(BUILD_DIR)
+        
     except OSError as e:
-        print(f"WARNING: Could not clear {BUILD_DIR}\n\tError raised -> {e}")
+        
+        if not quiet:
+            print(f"WARNING: Could not clear {BUILD_DIR}\n\tError raised -> {e}\n")
 
     # if build dir doesnt exists, create it
     if not BUILD_DIR.exists():
         os.mkdir(BUILD_DIR)
     
     # Create the setup.py file
-    setup_py = create_setup_py(file)
-    
     with open(HERE / 'setup.py', 'w') as f:
-        f.write(setup_py)
+        f.write(
+            create_setup_py(file)
+        )
            
-
     # Build the Cython extension
-    os.system(f'python {HERE / "setup.py"} build_ext --build-lib {HERE.parent} --build-temp {BUILD_DIR}')
+    os.system(f'python {HERE / "setup.py"} build_ext --build-lib {HERE.parent} --build-temp cython_build')
 
     # Return the path to the compiled Cython module
     return HERE / name # file extension is not needed, because python will give priority to a .so file 
 
-
-def convert_to_cython(source_module: Path) -> None:
-    # hold source module path to delete it when done   
-    source_module_temp = source_module
-    
-    source_module = build_cython_module(source_module_temp)
-    
-    # delete source module (PyCS module) to avoid conflict with cython module which has the same name
-    os.remove(source_module_temp)
-    del source_module_temp      

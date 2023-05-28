@@ -3,12 +3,12 @@ if __name__ == "__main__":
     exit(1)
 
 
-from typing import Dict, Any, List, NoReturn
+from typing import Dict, Any, NoReturn
 import tomli
 from dataclasses import dataclass
 
 # local modules
-from .module_manager import process_modules, ModulePackageConfig
+from .interpreter import run, ModulePackageConfig
 
 #  CONTANST ------------------------ <!>
 DEFAULT_PACKAGE_MODULE_NAME = "origin"
@@ -23,15 +23,15 @@ class Field:
     name: str
     description: str = ""
     type: Any = str
-    required: bool = True
 
 
 # field at config file which should have the list modules that will processed
-MODULES_FIELD: Field = Field(
-    name = "modules", 
-    description = "List of Modules that import other CustomScript Modules. Prepares that listed modules to be imported",
-    type = list
+MAINFILE_FIELD: Field = Field(
+    name = "main", 
+    description = "Main file. Will be runned by default. Configuration applies to all module being import in it.",
+    type = str
 )
+
 
    
 class Errors:
@@ -98,11 +98,11 @@ def get_field(field: Field, config_data: Dict[str, Any]) -> Any:
         
             
 # main function     ------------------------------ <!> ------------------------------
-def parse_config_file() -> Dict[str, Any]:
+def process_config_file() -> Dict[str, Any]:
     """
     Parses/Processes config data and all fields in it.
     """
-    
+     
     # open and get contents of file
     config_data: Dict[str, Any] | None = tomli.load(open(CONFIG_FILE_NAME, "rb"))
     
@@ -116,25 +116,14 @@ def parse_config_file() -> Dict[str, Any]:
         exit(1)
         
     # Parse modules
-    modules: List[str] = get_field(MODULES_FIELD, config_data)
+    main_file: str = get_field(MAINFILE_FIELD, config_data)
     
-    process_modules(
-        modules = modules,
+    run(
+        file = main_file,
         options = ModulePackageConfig().get_from(config_data)
     )
     
     return config_data
 
-            
-def get_from_config_file(key: str) -> Any | None:
-    # open and get contents of file
-    config_data: Dict[str, Any] | None = tomli.load(open(CONFIG_FILE_NAME, "rb"))
-    
-    # check if file has contents and is a dict
-    if not config_data or not isinstance(config_data, dict):
-        Errors.no_config()
-        
-    return config_data.get(key)
-        
         
     

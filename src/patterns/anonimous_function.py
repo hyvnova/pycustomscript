@@ -32,7 +32,7 @@ def pattern_handler(source: str) -> str:
         s, e = match.start(),  match.end()
 
         if not params or not func_content:
-            return
+            continue
 
         # fo cases when a comma get into function content
         func_end = ""
