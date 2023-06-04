@@ -3,9 +3,8 @@ from pathlib import Path
 from os import listdir
 from importlib.machinery import SourceFileLoader
 
-# use for type hint with writing real python modules
 from .list import list
-
+from .iterator import Iterator
 
 
 HERE = Path(__file__).parent
@@ -31,6 +30,6 @@ sys.path.append(r"{HERE.resolve().__str__()}")
 
             name = file[:-3]
 
-            f.write(f"from {name} import {name}\n")
+            f.write(f"from {name} import *\n")
 
         f.write("# [END BUILTINS IMPORT]\n\n" + content)

@@ -115,14 +115,18 @@ def process_config_file() -> Dict[str, Any]:
         exit(1)
         
     # Parse modules
+    return config_data
+
+def run_pycs() -> NoReturn:
+    """
+    Runs the PyCustomScript interpreter with the config file
+    """
+
+    config_data: Dict[str, Any] = process_config_file()
+
     main_file: str = get_field(MAINFILE_FIELD, config_data)
     
     run(
         file = main_file,
         options = ModulePackageConfig().get_from(config_data)
     )
-    
-    return config_data
-
-        
-    

@@ -63,6 +63,9 @@ def find_modules(file: Path, source_code: str) -> List[Path]:
         else:
             module = node.names[0].name
             
+        # get module name 
+        module = module.split(".")[0]
+            
         # check if is importing a installed package, if so, skip it.
         if not module in sys.modules:
             
@@ -84,7 +87,6 @@ class ModulePackageConfig:
     Enum of options that affect the configutation of a package module creation.
     instanciating this object with no arguments creates the default creation config
     """
-    custom_builtins: bool = False
     quiet: bool = False
     
 
@@ -175,7 +177,7 @@ def process_raw_source(
 
 def process_modules(main_file: Path, source_file: Path, options: ModulePackageConfig = ModulePackageConfig()) -> None:
     """
-    Applies PyCS, custom_builtins (if told to do so) to each file found at imports of `main_file`
+    Applies PyCS and custom_builtins to each file found at imports of `main_file`
     """
     modules = find_modules(main_file, open(source_file, "r").read())
 
@@ -188,8 +190,7 @@ def process_modules(main_file: Path, source_file: Path, options: ModulePackageCo
         source_module = process_raw_source(module_path.absolute(), quiet=options.quiet)
         
         # add custom builtins
-        if options.custom_builtins:
-            set_builtins(source_module)
+        set_builtins(source_module)
        
 def run(file: Path | str, options: ModulePackageConfig = ModulePackageConfig()) -> None:
     """
@@ -205,15 +206,13 @@ def run(file: Path | str, options: ModulePackageConfig = ModulePackageConfig()) 
     process_modules(file, source_file, options=options)
     
     # add custom builtins; added after to not interfire module search 
-    if options.custom_builtins:
-        set_builtins(source_file)
+    set_builtins(source_file)
 
     # clear console
     if options.quiet:
         system("cls")
     
-    if not options.quiet:
-        print(f"\n\t[Running: {source_file}]\n")
+    print(f"\n\t[Running: {source_file}]\n")
         
     system(f"python {source_file}")
               

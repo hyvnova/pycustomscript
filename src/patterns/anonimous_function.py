@@ -3,12 +3,18 @@ from uuid import uuid4
 
 def pattern_handler(source: str) -> str:
     """
-    Anonimous Functions
+    ## Anonimous Functions
+    Create anonimous functions similar to JavaScript.
+
+    ### Examples
     ```py
-    (param1, ...) => {
+    (param1, ...) => 
         x = do_something(param1)
-        x * 2 # <- last expression is returned
-    }
+        x * 2 # <- last expression is returned (unless it ends with ";")
+        ; # <- this indicates the end of the function
+
+    # You can also have 1 line functions
+    (param1, ...) => x = do_something(param1);  # <- as long as it ends with ";"
     ```
     """
 
@@ -20,9 +26,8 @@ def pattern_handler(source: str) -> str:
         \s?                     # Optional Whitespace
         =>                      # Arrow token (only used for sintax)
         \s?                     
-        {                       # Start of function Body
         ([-!$%^&*()_+|~=`\[\]:";'<>?,.\/a-zA-Z0-9\s]+) # function Body
-        }                       # End of function Body
+        ;                       # End of function Body
         """,
         re.VERBOSE
     ) 
@@ -51,12 +56,16 @@ def pattern_handler(source: str) -> str:
 
         func = f'def {func_name}({params}):\n\t'
 
-        func_sentences  = [*map(lambda x: x.strip(), func_content.split(";"))]
+        func_sentences  = [*map(lambda x: x.strip(), func_content.split("\n"))]
 
         if len(func_sentences) == 1:
             func += f"return {func_sentences[0]}"
 
         else:
+            # if last sentence is doesnt end with ";" add return
+            if not func_sentences[-1].endswith(";"):
+                func_sentences[-1] = "return " + func_sentences[-1]
+
             func += "\n\t".join(func_sentences)
 
         # replace sintax with func name

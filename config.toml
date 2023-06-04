@@ -2,5 +2,4 @@
 # file that will be runned by default if no file is passed on the run command
 main = "tests/main.py" # str
 
-custom_builtins = true # if True, custom builtins will be loaded
 quiet = true # if True warning won't be printed

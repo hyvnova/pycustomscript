@@ -1,12 +1,2 @@
-
-
-# testing destruct
-
-d = {
-    "a": (x, y) => {x+y},
-    "b": 2,
-    "c": 3
-}
-
-{a, c} = d
-print(a, c)
+for i in <1..10>:
+    print(i.map((x) => x * 2;))

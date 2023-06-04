@@ -6,12 +6,11 @@ if __name__ != "__main__":
 import argparse
 
 #local modules
-from src.parseconfig import process_config_file
+from src.parseconfig import process_config_file, run_pycs
 
-
-process_config_file()
-exit(1)
-
+# DEBUGGING
+run_pycs()
+exit(0)
 
 
 # argument parse for taking and managing command from Command line
@@ -21,25 +20,20 @@ parser = argparse.ArgumentParser(
     epilog = 'check help.md to see the list a explanation of all commands'
 )
 
-
 parser.add_argument(
     "action", 
     default="run", 
-    
     # COMMAND LIST  ---------------------------- <!> ---------------------------------
     choices=[
         "run"
-    ]
+    ],
 )
 
-
 # MANAGE COMMAND
-
 args = parser.parse_args()
 
 # RUN COMMAND
 if args.action == "run":
-    
-    process_config_file()   
+    run_pycs()
     
      
