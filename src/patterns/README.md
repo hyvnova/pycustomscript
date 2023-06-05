@@ -29,11 +29,8 @@ def pattern_handler(source: str) -> str:
         re.VERBOSE
     )
 
-    for match in pattern.finditer(source):
-
-        # match start & end
-        start, end = match.start(),  match.end()
-
+    while (match := pattern.search(source)) is not None:
+        # Do something with the match
 
     return source
 ```

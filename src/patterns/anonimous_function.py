@@ -32,10 +32,8 @@ def pattern_handler(source: str) -> str:
         re.VERBOSE
     ) 
 
-    for match in pattern.finditer(source):
-
+    while (match := pattern.search(source)) is not None:
         params, func_content = match.groups()
-        s, e = match.start(),  match.end()
 
         if not params or not func_content:
             continue
@@ -69,7 +67,7 @@ def pattern_handler(source: str) -> str:
             func += "\n\t".join(func_sentences)
 
         # replace sintax with func name
-        source = source[:s] + func_name + func_end + source[e:]
+        source = source[:match.start()] + func_name + func_end + source[match.end():]
 
         # append func at source (this happens after because start and end world change)
         source = func + "\n" + source

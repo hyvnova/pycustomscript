@@ -25,9 +25,7 @@ def pattern_handler(source: str) -> str:
         re.VERBOSE
     )
 
-    for match in pattern.finditer(source):
-        s, e = match.start(),  match.end()
-
+    while (match := pattern.search(source)) is not None:
         key, obj = match.groups()
         sentence = ''
 
@@ -50,7 +48,7 @@ def pattern_handler(source: str) -> str:
         else:
             sentence = f'{key} = {obj}.get("{key}", None)'
 
-        source = source[:s] + sentence  + source[e:]
+        source = source[:match.start()] + sentence + source[match.end():]
 
 
     return source

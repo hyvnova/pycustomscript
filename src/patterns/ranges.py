@@ -25,10 +25,10 @@ def pattern_handler(source: str) -> str:
     range_pattern: re.Pattern = re.compile(
         r"""
         \<  # opening arrow - syntax for start of range
-        (?P<start>[a-zA-Z0-9._\[\]\"\'\(\)\{\}]+)? # start
+        (?P<start>[a-zA-Z0-9._\[\]\"\'\(\)\{\}+\-\*\\]+)? # start
         \.\. # range operator seperator ".."
         (?P<inclusive>\=)? # inclusive
-        (?P<end>[a-zA-Z0-9._\[\]\"\'\(\)\{\}]+)? # end
+        (?P<end>[a-zA-Z0-9._\[\]\"\'\(\)\{\}+\-\*\\]+)? # end
         \> # closing arrow - syntax for end of range
         """,
         re.VERBOSE
@@ -37,41 +37,39 @@ def pattern_handler(source: str) -> str:
     slice_range_pattern: re.Pattern = re.compile(
         r"""
         \[ # opening bracket
+        \s? # optional whitespace
         \< # opening arrow - syntax for start of range
-        (?P<start>[a-zA-Z0-9._\[\]\"\'\(\)\{\}]+)? # start
+        (?P<start>[a-zA-Z0-9._\[\]\"\'\(\)\{\}+\-\*\\]+)? # start
         \.\. # range operator seperator ".."
         (?P<inclusive>\=)? # inclusive
-        (?P<end>[a-zA-Z0-9._\[\]\"\'\(\)\{\}]+)? # end
+        (?P<end>[a-zA-Z0-9._\[\]\"\'\(\)\{\}+\-\*\\]+)? # end
         \> # closing arrow - syntax for end of range
+        \s? # optional whitespace
         \] # closing bracket
         """,
         re.VERBOSE
     )
 
-    # HANDLE SLICE RANGES FIRST TO AVOID OVERLAP WITH NORMAL RANGES
-    for match in slice_range_pattern.finditer(source):
-        # match start & end
-        start, end = match.start(), match.end()
-
+    
+    # while there are matches of the range pattern, process them
+    # this is done with a while loop because the source string is being modified
+    
+    while (match := slice_range_pattern.search(source)) is not None:
         # get start & end of range
         range_start, range_end, inclusive = match.group("start"), match.group("end"), match.group("inclusive")
 
         inclusive = "+1" if inclusive else ""
-        
+
         # replace range with slice
-        source = source[:start] + f"{range_start}:{range_end}{inclusive}" + source[end:]
+        source = source[:match.start()] + f"[{range_start}:{range_end}{inclusive}]" + source[match.end():]
 
-    # HANDLE NORMAL RANGES
-    for match in range_pattern.finditer(source):
-        # match start & end
-        start, end = match.start(), match.end()
-
+    while (match := range_pattern.search(source)) is not None:
         # get start & end of range
         range_start, range_end, inclusive = match.group("start"), match.group("end"), match.group("inclusive")
 
         inclusive = "+1" if inclusive else ""
 
         # replace range with slice | Note: Iterator should be already imported as a custom builtin
-        source = source[:start] + f"Iterator(range({range_start}, {range_end}{inclusive}))" + source[end:] 
+        source = source[:match.start()] + f"Iterator(range({range_start}, {range_end}{inclusive}))" + source[match.end():]
 
     return source
