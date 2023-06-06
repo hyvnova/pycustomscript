@@ -33,4 +33,7 @@ print(name, role) # Jonh Developer
 Inspired by JS's arrow functions, are a more clean way to write anonymous functions.
 ```py
 even_numbers = <1..n+1>.filter((x) => x % 2 == 0;)
+
+# they can be async too
+async (data) => await fetch(data);
 ```
