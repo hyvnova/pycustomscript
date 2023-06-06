@@ -1,5 +1,5 @@
 
 # file that will be runned by default if no file is passed on the run command
-main = "tests/main.py" # str
+main = "tests/main.pycs" # str
 
 quiet = true # if True warning won't be printed

@@ -15,25 +15,29 @@ def pattern_handler(source: str) -> str:
 
     # You can also have 1 line functions
     (param1, ...) => x = do_something(param1);  # <- as long as it ends with ";"
+
+    # They can also be async
+    async (param1, ...) => ...;
     ```
     """
 
     pattern: re.Pattern = re.compile(
         r"""
+        (?P<async>async\s)?     # async keyword
         \(                      # Function Arguments Start Parenthesis
-        ([a-zA-Z0-9,_\s]*)      # Function Arguments
+        (?P<args>[a-zA-Z0-9,_\s]*)      # Function Arguments
         \)                      # Function Arguments End Parenthesis
         \s?                     # Optional Whitespace
         =>                      # Arrow token (only used for sintax)
         \s?                     
-        ([-!$%^&*()_+|~=`\[\]:";'<>?,.\/a-zA-Z0-9\s]+) # function Body
+        (?P<body>[-!$%^&*()_+|~=`\[\]:";'<>?,.\/a-zA-Z0-9\s]+) # function Body
         ;                       # End of function Body
         """,
         re.VERBOSE
     ) 
 
     while (match := pattern.search(source)) is not None:
-        params, func_content = match.groups()
+        is_async, params, func_content = match.group("async"), match.group("args"), match.group("body")
 
         if not params or not func_content:
             continue
@@ -53,6 +57,8 @@ def pattern_handler(source: str) -> str:
         func_name = "__func_" + str(uuid4())[4:12].replace("-", "")
 
         func = f'def {func_name}({params}):\n\t'
+        if is_async:
+            func = "async " + func
 
         func_sentences  = [*map(lambda x: x.strip(), func_content.split("\n"))]
 

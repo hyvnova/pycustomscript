@@ -123,9 +123,8 @@ def process_raw_source(
         file = Path(file).absolute()
 
     # format output file name
-    output_file: Path = file.parent / output_file.format(filename=Path(file).name)
-    
-    
+    output_file: Path = file.parent / output_file.format(filename=Path(file).stem + ".py") 
+
     # clear __source__ dir
     if output_file.parent.name == "__source__":
         try:
