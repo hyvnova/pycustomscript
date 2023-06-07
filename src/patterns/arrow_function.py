@@ -24,6 +24,7 @@ def pattern_handler(source: str) -> str:
     pattern: re.Pattern = re.compile(
         r"""
         (?P<async>async\s)?     # async keyword
+        \s?                     # Optional Whitespace
         \(                      # Function Arguments Start Parenthesis
         (?P<args>[a-zA-Z0-9,_\s]*)      # Function Arguments
         \)                      # Function Arguments End Parenthesis
@@ -31,16 +32,13 @@ def pattern_handler(source: str) -> str:
         =>                      # Arrow token (only used for sintax)
         \s?                     
         (?P<body>[-!$%^&*()_+|~=`\[\]:";'<>?,.\/a-zA-Z0-9\s]+) # function Body
-        ;                       # End of function Body
+        ;                      # End of function
         """,
         re.VERBOSE
     ) 
 
     while (match := pattern.search(source)) is not None:
         is_async, params, func_content = match.group("async"), match.group("args"), match.group("body")
-
-        if not params or not func_content:
-            continue
 
         # fo cases when a comma get into function content
         func_end = ""

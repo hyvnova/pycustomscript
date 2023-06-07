@@ -106,7 +106,7 @@ class ModulePackageConfig:
     
 def process_raw_source(
     file: Path | str, 
-    output_file: str = "__source__/{filename}",
+    output_file: str = "__src__/{filename}",
     quiet: bool = True
 ) ->  Path:
     """
@@ -125,8 +125,8 @@ def process_raw_source(
     # format output file name
     output_file: Path = file.parent / output_file.format(filename=Path(file).stem + ".py") 
 
-    # clear __source__ dir
-    if output_file.parent.name == "__source__":
+    # clear __src__ dir
+    if output_file.parent.name == "__src__":
         try:
             remove(output_file.parent)
             
@@ -179,6 +179,9 @@ def process_modules(main_file: Path, source_file: Path, options: ModulePackageCo
     Applies PyCS and custom_builtins to each file found at imports of `main_file`
     """
     modules = find_modules(main_file, open(source_file, "r").read())
+
+    # filter not .pycs files
+    modules = filter(lambda x: x.suffix == ".pycs", modules)
 
     # Create package module (aka origin)          
     for module in modules:

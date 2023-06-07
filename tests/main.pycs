@@ -1,0 +1,6 @@
+# write an example code that uses async arrow function: async () => ...;
+import asyncio
+
+main = async () => print("Hello World");
+
+asyncio.run(main())
