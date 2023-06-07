@@ -1,4 +1,4 @@
-# PyCustomScript (1.4.1)
+# PyCustomScript (1.4)
 
 ## Custom Sintax
 - Ranges
