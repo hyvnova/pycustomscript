@@ -7,6 +7,22 @@
 -  If a pattern file starts with `OP` means that file is a Optimization Pattern File; which finds a pattern ad replaces it with a more effiecient option
 
 
+### Syntax conventions
+- for a pattern that affects directly a expression or a statement you should use the following syntax:
+```py
+# for a expression
+(a + b)::name<parameter>
+
+# or a statement
+a = input()::name<parameter>
+
+# Example
+n = input()::to<int>
+
+# Example - you can also have options like this
+n = input()::to<int>?  
+```
+
 
 ## Pattern File Template:
 ```py
@@ -17,14 +33,12 @@ def pattern_handler(source: str) -> str:
     ## Patter Name
     Description of the pattern
 
-    ```py
-    sample pattern capture
-    ```
+    ### Example
+    Capure example 
     """
 
     pattern: re.Pattern = re.compile(
         r"""
-
         """,
         re.VERBOSE
     )

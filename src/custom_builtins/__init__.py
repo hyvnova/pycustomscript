@@ -1,11 +1,6 @@
 
 from pathlib import Path
 from os import listdir
-from importlib.machinery import SourceFileLoader
-
-from .list import list
-from .iterator import Iterator
-
 
 HERE = Path(__file__).parent
 

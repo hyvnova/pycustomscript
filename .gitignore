@@ -1,7 +1,7 @@
 .vscode/
 
 # PyCS build files
-__source__/
+__src__/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

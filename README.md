@@ -1,6 +1,16 @@
-# PyCustomScript (1.4)
+# PyCustomScript (1.5)
 
 ## Custom Sintax
+- Type Casting 
+Provides a way to cast a variable to a specific type. Inspired by Rust's type casting.
+```py
+# Casting to int
+n = "10"::to<int>
+
+# Error handling
+n = "10"::to<int>?.expect("Expected a number")
+```
+
 - Ranges
 Similar to Rust's ranges, provides a way to iterate over a range of numbers. 
 ```py
