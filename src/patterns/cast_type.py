@@ -4,6 +4,12 @@ def pattern_handler(source: str) -> str:
     """
     ## Patter Name
     Cast A Expression or Variable to a Type. Only works in in-line expressions.
+
+    ### Syntax
+    ```
+    <expr>::to<<type_name>>
+    ```
+
     ### Example
     ```py
     n = input("Enter a number: ")::to<int>
@@ -23,7 +29,7 @@ def pattern_handler(source: str) -> str:
 
     pattern: re.Pattern = re.compile(
         r"""
-        ([\w \+\-\_\{\}\(\)\|\]\[*\\\/@&!\"\']*?) # The expression or variable to cast
+        ([\w ,\+\-\_\{\}\(\)\|\]\[*\\\/@&!\"\']*?) # The expression or variable to cast
         ::to<([a-zA-Z_][a-zA-Z0-9_]*)> # The type to cast to
         (\?)? # If the casting can fail
         """,

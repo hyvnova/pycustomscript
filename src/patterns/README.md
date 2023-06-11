@@ -33,6 +33,9 @@ def pattern_handler(source: str) -> str:
     ## Patter Name
     Description of the pattern
 
+    ### Syntax
+    Pattern syntax
+
     ### Example
     Capure example 
     """

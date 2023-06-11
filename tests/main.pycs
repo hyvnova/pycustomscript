@@ -1,5 +1,15 @@
 
 
-n = "a"::to<int>?.expect("Expected a integer") 
+@Derive(| "items" -> Get, Set;)
+class MyClass:
+    def __init__(self, items):
+        self.items = items
 
-print(n)
+x = [1, 2, 3]
+def fn1(a):
+    pass
+
+def fn2(a):
+    pass
+
+res = (| x, 2 -> fn1, fn2;)

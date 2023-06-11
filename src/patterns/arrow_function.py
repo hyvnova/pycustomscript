@@ -6,6 +6,11 @@ def pattern_handler(source: str) -> str:
     ## Anonimous Functions
     Create anonimous functions similar to JavaScript.
 
+    ### Syntax
+    ```
+    (param1, ...) => <body>;
+    ```
+    
     ### Examples
     ```py
     (param1, ...) => 
@@ -26,7 +31,7 @@ def pattern_handler(source: str) -> str:
         (?P<async>async\s)?     # async keyword
         \s?                     # Optional Whitespace
         \(                      # Function Arguments Start Parenthesis
-        (?P<args>[a-zA-Z0-9,_\s]*)      # Function Arguments
+        (?P<args>[\w ,\+\-\_\{\}\(\)\|\]\[*\\\/@&!\"\']*?)      # Function Arguments
         \)                      # Function Arguments End Parenthesis
         \s?                     # Optional Whitespace
         =>                      # Arrow token (only used for sintax)

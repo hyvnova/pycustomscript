@@ -2,7 +2,14 @@ import re
 
 def pattern_handler(source: str) -> str:
     """
-    Dict Destructuring
+    Destructure a dict into multiple variables
+
+    ### Syntax
+    ```
+    {<key1>, <key2>, ...} = <dict>
+    ```
+
+    ### Example
     ```py
     obj = {"name": "Jonh", "level" : 2, "other" : "other value"}
     {name, level} = obj

@@ -29,6 +29,10 @@ class Some:
             return self.value
         raise ValueError(msg)
     
+    def unwrap_or(self, default: Any) -> Any:
+        if self:
+            return self.value
+        return default
 
 class Nothing:
     """
@@ -61,5 +65,8 @@ class Nothing:
     def expect(cls, msg: str = "Unexpected Nothing") -> Any:
         raise ValueError(msg)
     
+    @classmethod
+    def unwrap_or(cls, default: Any) -> Any:
+        return default
 
 Option = Union[Some, Nothing]

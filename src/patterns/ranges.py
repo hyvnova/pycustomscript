@@ -6,6 +6,14 @@ def pattern_handler(source: str) -> str:
     Syntax support for ranges just like in Rust. Underneath the hood, this uses the `range` function in Python.
     Note: There cannot be any whitespace between the range operator `..` and the start/end of the range.
     
+    ### Syntax
+    ```
+    <start..end>
+    <start..=end>
+    <..end>
+    <start..>
+    ```
+
     ### Examples
     ```py
     for i in <1..10>:
