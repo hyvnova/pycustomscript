@@ -68,7 +68,7 @@ Iterator(numbers).filter((n) => n <= 7;).map((n) => n * 2;)
 ```
 
 ### Magic Methods Shortcuts
-A set of decorators that made it easy to "derive" behavior into a class.
+A set of decorators that make it easy to "derive" behavior into a class.
 
 
 ```py
