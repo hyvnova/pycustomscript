@@ -134,3 +134,99 @@ def Set(property_name: str, create_if_not_exists: bool = False):
 
     return decorator
 
+def Del(property_name: str):
+    """
+    Decorator that adds the `__delitem__` method to a class
+
+    ### Parameters:
+    - `property_name`: The name of the property that will be used to delete items from the class
+    """
+
+    def decorator(cls):
+        # Define the __delitem__ method
+        @cache
+        def __delitem__(self, key):
+            del getattr(self, property_name)[key]
+
+        # Add the __delitem__ method to the class
+        cls.__delitem__ = __delitem__
+
+        return cls
+
+    return decorator
+
+def Len(property_name: str):
+    """
+    Decorator that adds the `__len__` method to a class
+
+    ### Parameters:
+    - `property_name`: The name of the property that will be used to get the length of the class
+    """
+
+    def decorator(cls):
+        # Define the __len__ method
+        @cache
+        def __len__(self):
+            return len(getattr(self, property_name))
+
+        # Add the __len__ method to the class
+        cls.__len__ = __len__
+
+        return cls
+
+    return decorator
+
+
+def Call(property_name: str):
+    """
+    Decorator that adds the `__call__` method to a class
+
+    ### Parameters:
+    - `property_name`: The name of the property that will be used to call the class
+    """
+
+    def decorator(cls):
+        # Define the __call__ method
+        @cache
+        def __call__(self, *args, **kwargs):
+            return getattr(self, property_name)(*args, **kwargs)
+
+        # Add the __call__ method to the class
+        cls.__call__ = __call__
+
+        return cls
+
+    return decorator
+
+def Str(debug: bool = False):
+    """
+    Decorator that adds the `__str__` method to a class in order to make it printable
+    
+    ### Parameters:
+    - `debug`: If true meta information will be added to the string (Default: `False`)
+    """
+
+    def decorator(cls):
+        # Define the __str__ method
+        @cache
+        def __str__(self):
+
+            fields = '\n\t'.join([f"{key} : {getattr(self, key)}" for key in dir(self) if not key.startswith('__')])
+            text = f"{self.__class__.__name__}:\n\t[Properties]\n\t{fields}"
+
+            if debug:
+                text += f"""\n\n\t[Meta]
+\t class : {self.__class__}
+\t parents : {self.__class__.__bases__}
+\t module : {self.__module__}
+\t dict  : {getattr(self, '__dict__') or getattr(self, '__slots__')}
+                """
+
+            return text
+
+        # Add the __str__ method to the class
+        cls.__str__ = __str__
+
+        return cls
+
+    return decorator

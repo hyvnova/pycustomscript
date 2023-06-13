@@ -4,8 +4,6 @@ from os import listdir
 
 HERE = Path(__file__).parent
 
-CUSTOM_BUILTINS_MODULE_NAME: str = "__custom_builtins__.py"
-
 def set_builtins(source_file: Path) -> None:
 
     with open(source_file, 'r+') as f:

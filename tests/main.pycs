@@ -1,15 +1,15 @@
 
+@Str()
+class Test:
+    def __init__(self, name):
+        self.name = name
 
-@Derive(| "items" -> Get, Set;)
-class MyClass:
-    def __init__(self, items):
-        self.items = items
+    def sample(self):
+        print('sample')
+    
+    @staticmethod
+    def static():
+        print('static')
 
-x = [1, 2, 3]
-def fn1(a):
-    pass
-
-def fn2(a):
-    pass
-
-res = (| x, 2 -> fn1, fn2;)
+obj = Test('test')
+print(obj)

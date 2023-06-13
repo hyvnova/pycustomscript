@@ -98,6 +98,17 @@ obj[0] = 10 # Set
 for item in obj: # Iter
     print(item)
 ``` 
+#### Available decorators
+1. Dependent decorators (require a field in the class)
+    - `Iter`: Makes a class iterable.
+    - `Get`: Makes a class subscriptable.
+    - `Set`: Makes a class subscriptable.
+    - `Len`: Makes a class have a length.
+    - `Call`: Makes a class callable.
+
+2. Independent decorators (don't require a field in the class)
+    - `Str`: Makes a class printable.
+
 
 ### Option type
 A type that represents a value that can be `Some` or `Nothing`. Inspired by Rust's `Option` type.
