@@ -59,9 +59,8 @@ def pattern_handler(source: str) -> str:
     )
 
     
-    # while there are matches of the range pattern, process them
-    # this is done with a while loop because the source string is being modified
-    
+
+    # Slice range pattern    
     while (match := slice_range_pattern.search(source)) is not None:
         # get start & end of range
         range_start, range_end, inclusive = match.group("start"), match.group("end"), match.group("inclusive")
@@ -71,6 +70,7 @@ def pattern_handler(source: str) -> str:
         # replace range with slice
         source = source[:match.start()] + f"[{range_start}:{range_end}{inclusive}]" + source[match.end():]
 
+    # Range pattern
     while (match := range_pattern.search(source)) is not None:
         # get start & end of range
         range_start, range_end, inclusive = match.group("start"), match.group("end"), match.group("inclusive")

@@ -1,15 +1,12 @@
 
-@Str()
-class Test:
-    def __init__(self, name):
-        self.name = name
+import time
 
-    def sample(self):
-        print('sample')
-    
-    @staticmethod
-    def static():
-        print('static')
+def timely_func(n):
+    print("timely_func called with n = {}".format(n))
+    time.sleep(1)
+    print("timely_func finished with n = {}".format(n))
 
-obj = Test('test')
-print(obj)
+
+# Start the threads
+for n in range(1, 10):
+    concurrent::thread(timely_func, n)

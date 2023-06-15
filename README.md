@@ -57,6 +57,17 @@ even_numbers = <1..n+1>.filter((x) => x % 2 == 0;)
 # they can be async too
 async (data) => await fetch(data);
 ```
+
+### Concurrency Shortcuts
+A special syntax that makes it easy to write concurrent code.
+```py
+concurrent::thread(some_func, *args, **kwargs)
+concurrent::process(some_func, *args, **kwargs)
+
+# You can use ! to not wait for thread/process to finish
+concurrent::thread!(some_func, *args, **kwargs)
+```
+
 ## Built-ins
 
 ### Iterator 
@@ -124,3 +135,4 @@ user = get_user().expect("User not found") # throws an error if the value is Not
 # Or you could use a default value
 user = get_user().unwrap_or(DEFAULT_USER)
 ```
+
