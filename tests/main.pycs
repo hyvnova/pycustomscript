@@ -1,12 +1,14 @@
 
-import time
+inputs = [1, 2, 3, 4, 5]
+outputs = [1, 4, 9, 16, 25]
 
-def timely_func(n):
-    print("timely_func called with n = {}".format(n))
-    time.sleep(1)
-    print("timely_func finished with n = {}".format(n))
+def f1(i, o):
+    r = i * i
+    return r == o
+    
+def f2(i, o):
+    r = i * i * i
+    return r == o
 
 
-# Start the threads
-for n in range(1, 10):
-    concurrent::thread(timely_func, n)
+print(|> inputs, outputs -> f1, f2;)

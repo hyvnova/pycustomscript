@@ -1,5 +1,6 @@
 import re
 
+
 def pattern_handler(source: str) -> str:
     """
     ## Patter Name
@@ -8,29 +9,25 @@ def pattern_handler(source: str) -> str:
     ### Syntax
     ```
     | <args> -> <funcs>;        # Distribute as parameter
-    || <args> -> <funcs>;       # Distribute as call
+    |> <args> -> <funcs>;       # Distribute iterable arguments
     ```
 
     ### Example
     ```py
     # Distrubute as parameter
-    @Derive(| "items" -> Iter, Get;)    
+    @Derive(| "items" -> Iter, Get;)
 
-    # You can also get the result of the functions
-    res = (| 3.14 -> Dist, Trajectory) 
+    # You can  get the result of the functions
+    res = | 3.14 -> Dist, Trayectory;
 
-    # Distribute as call
-    x = [1, 2, 3]
-    || x -> Func1, Func2; # Note that for calls we use double pipes (||)
-
-    Note: the main difference between the two is that using parameter distribution (|) you can get the result of the functions, while using call distribution (||) you can't, since the are only being called. Basicly one acts as a `expression` and the other as a `statement`.
+    # Distribute iterable arguments
+    |> inputs, outputs -> test1, test2, test3; (Note: the result is a tuple of tuples, a tuple the results of each function)
     """
-
 
     pattern: re.Pattern = re.compile(
         r"""
         \| # Distribute operator start token
-        (?P<call_mode>\|)? # If the distribute is a direct call (||)
+        (?P<iter_mode>\>)? # If the distribute is using iteration (|>)
         \s? # Optional Whitespace
         (?P<args>[\w ,\+\-\_\{\}\(\)\|\]\[*\\\/@&!\"\']*?) # The arguments to distribute
         \s?
@@ -39,12 +36,16 @@ def pattern_handler(source: str) -> str:
         (?P<funcs>[\w ,\+\-\_\{\}\(\)\|\]\[*\\\/@&!\"\']*?) # The functions to distribute the arguments to
         ; # end token
         """,
-        re.VERBOSE
+        re.VERBOSE,
     )
 
     while (match := pattern.search(source)) is not None:
-
-        args, funcs, call_mode = match.group("args"), match.group("funcs"), match.group("call_mode")
+        args, funcs, call_mode, iter_mode = (
+            match.group("args"),
+            match.group("funcs"),
+            match.group("call_mode"),
+            match.group("iter_mode"),
+        )
 
         # clean args
         args = args.strip()
@@ -55,13 +56,20 @@ def pattern_handler(source: str) -> str:
         # create new source
         new_source = ""
 
-        # if the distribute is a direct call
-        if call_mode:
-            new_source += "\n".join([f"{func}({args})" for func in funcs])
+        # if the distribute is a iteration (args are iterables)
+        if iter_mode:
+            new_source += (
+                "tuple((tuple(map(lambda args: func(*args), zip("
+                + args
+                + ")))) for func in ["
+                + ", ".join(funcs)
+                + "])"
+            )
+
         else:
-            new_source += ", ".join([f"{func}({args})" for func in funcs])
+            new_source += "[" + ", ".join([f"{func}({args})" for func in funcs]) + "]"
 
         # replace sintax with new source
-        source = source[:match.start()] + new_source + source[match.end():] 
+        source = source[: match.start()] + new_source + source[match.end() :]
 
     return source
