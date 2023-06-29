@@ -7,8 +7,8 @@ Provides a way to distribute a single or multiple arguents into multiple funcion
 ```py
 res = | PI, Coords -> Direction, Distance; # Distribute PI and Coords into the Direction and Distance functions
 
-# Make direct call
-|| test_data -> Fn1, Fn2, Fn3;
+# Distribute a arguments as iterable
+|> inputs, outputs -> f1, f2; # Iterate over inputs and outputs and distribute them into f1 and f2
 ``` 
 
 ### Type Casting 
